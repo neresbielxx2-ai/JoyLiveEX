@@ -92,9 +92,9 @@ public sealed class VirtualButton : FrameworkElement
         e.Handled = true;
     }
 
-    protected override void OnTouchLostCapture(TouchEventArgs e)
+    protected override void OnLostTouchCapture(TouchEventArgs e)
     {
-        base.OnTouchLostCapture(e);
+        base.OnLostTouchCapture(e);
         SetHeld(false); // anti-stuck on swipe-away / system cancel
     }
 

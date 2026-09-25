@@ -109,9 +109,9 @@ public sealed class StickControl : FrameworkElement
         e.Handled = true;
     }
 
-    protected override void OnTouchLostCapture(TouchEventArgs e)
+    protected override void OnLostTouchCapture(TouchEventArgs e)
     {
-        base.OnTouchLostCapture(e);
+        base.OnLostTouchCapture(e);
         EndDrag();
     }
 

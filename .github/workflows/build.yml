@@ -141,7 +141,7 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace --continue 2>&1 | tee /tmp/g.log || {
-            grep -E "^e: |error:|^\* What went wrong" -A3 /tmp/g.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
+            grep -E "^e: |error:|FAILED|AssertionError|expected:|^\* What went wrong" -A5 /tmp/g.log | head -80 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - name: Build APKs
         working-directory: android
