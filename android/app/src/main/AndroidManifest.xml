@@ -30,7 +30,7 @@
             android:name=".ui.ControllerActivity"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|density|navigation"
             android:exported="false"
-            android:screenOrientation="landscapeSensor"
+            android:screenOrientation="sensorLandscape"
             android:theme="@style/Theme.Vjc.Fullscreen" />
 
         <activity

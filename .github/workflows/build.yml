@@ -24,7 +24,11 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Restore & test
-        run: dotnet test desktop/tests/VirtualJoyCon.Core.Tests/VirtualJoyCon.Core.Tests.csproj -c Release --logger "console;verbosity=normal"
+        run: |
+          set -o pipefail
+          dotnet test desktop/tests/VirtualJoyCon.Core.Tests/VirtualJoyCon.Core.Tests.csproj -c Release --logger "console;verbosity=detailed" 2>&1 | tee /tmp/t.log || {
+            grep -E "Failed |Assert\\.|Error Message" -A2 /tmp/t.log | head -60 | sed 's/^/::error::/'
+            exit 1; }
 
   # ------------------------------------------------------- input daemon (dex)
   daemon:
@@ -50,7 +54,7 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew :daemon:dexJar --no-daemon --stacktrace 2>&1 | tee /tmp/g.log || {
-            grep -E "FAILURE|What went wrong|^e: |error:" /tmp/g.log | head -40 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
+            grep -E "^e: |error:|^\* What went wrong" -A3 /tmp/g.log | head -50 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - uses: actions/upload-artifact@v4
         with:
@@ -137,14 +141,14 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace --continue 2>&1 | tee /tmp/g.log || {
-            grep -E "^e: |error:|FAILURE|What went wrong" /tmp/g.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
+            grep -E "^e: |error:|^\* What went wrong" -A3 /tmp/g.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - name: Build APKs
         working-directory: android
         run: |
           set -o pipefail
           ./gradlew :app:assembleRelease :app:assembleDebug :daemon:dexJar --no-daemon --stacktrace 2>&1 | tee /tmp/g2.log || {
-            grep -E "^e: |error:|FAILURE|What went wrong" /tmp/g2.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
+            grep -E "^e: |error:|^\* What went wrong" -A3 /tmp/g2.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - name: Stage artifacts
         run: |

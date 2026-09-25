@@ -20,6 +20,8 @@ public static class VjcCrypto
         int offset = 0;
         uint block = 1;
         Span<byte> u = stackalloc byte[32];
+        Span<byte> next = stackalloc byte[32];
+        Span<byte> t = stackalloc byte[32];
         Span<byte> input = stackalloc byte[salt.Length + 4];
         salt.AsSpan().CopyTo(input);
 
@@ -31,11 +33,11 @@ public static class VjcCrypto
             input[^1] = (byte)block;
 
             hmac.TryComputeHash(input, u, out _);
-            Span<byte> t = stackalloc byte[32];
             u.CopyTo(t);
             for (int i = 1; i < iterations; i++)
             {
-                hmac.TryComputeHash(u, u, out _);
+                hmac.TryComputeHash(u, next, out _);
+                next.CopyTo(u);
                 for (int j = 0; j < 32; j++) t[j] ^= u[j];
             }
             int take = Math.Min(32, dkLen - offset);
