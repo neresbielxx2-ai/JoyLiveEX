@@ -68,7 +68,7 @@ public sealed class AppSettings
 
     public void Save()
     {
-        Directory.CreateDirectory(Directory);
+        System.IO.Directory.CreateDirectory(Directory);
         var tmp = FilePath + ".tmp";
         File.WriteAllText(tmp, JsonSerializer.Serialize(this, JsonOpts));
         if (File.Exists(FilePath))

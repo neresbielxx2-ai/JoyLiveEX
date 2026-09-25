@@ -36,10 +36,14 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Install platform & build-tools
-        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" >/dev/null
+      - name: Verify runner Android SDK (preinstalled image)
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" | tee -a "$GITHUB_ENV"
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          sdkmanager --install "platforms;android-34" "build-tools;34.0.0" 2>&1 | tail -2 || true
+          ls "$ANDROID_HOME/build-tools" | head -5
+          ls "$ANDROID_HOME/platforms" | head -5
       - name: Build vjc-daemon.jar
         working-directory: android
         run: ./gradlew :daemon:dexJar --no-daemon --stacktrace
@@ -116,10 +120,12 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-      - name: Install platform & build-tools
-        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" >/dev/null
+      - name: Verify runner Android SDK (preinstalled image)
+        run: |
+          echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" | tee -a "$GITHUB_ENV"
+          export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          sdkmanager --install "platforms;android-34" "build-tools;34.0.0" 2>&1 | tail -2 || true
       - name: Unit tests
         working-directory: android
         run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace

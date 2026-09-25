@@ -42,7 +42,7 @@ public sealed class Logger : IDisposable
     public void Log(LogLevel level, string source, string message)
     {
         if (level == LogLevel.Trace && !Verbose) return;
-        var e = new LogEntry(DateTimeUtc.Now, level, source, message);
+        var e = new LogEntry(DateTime.UtcNow, level, source, message);
         _entries.Enqueue(e);
         if (Interlocked.Increment(ref _count) > Capacity)
         {
