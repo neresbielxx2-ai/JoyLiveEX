@@ -66,15 +66,15 @@ class VjcLink(
         var p = 0
         b[p++] = serviceState.toByte()
         b[p++] = inputMode.toByte()
-        b[p] = (rttMs.toInt() shr 8).toByte(); b[p + 1] = rttMs.toInt().toByte(); p += 2
+        b[p] = rttMs.toInt().toByte(); b[p + 1] = (rttMs.toInt() shr 8).toByte(); p += 2
         b[p++] = (lossPct.toInt() and 0xFF).toByte()
         b[p] = m.size.toByte(); b[p + 1] = 0; p += 2
         m.copyInto(b, p); p += m.size
         b[p] = n.size.toByte(); b[p + 1] = 0; p += 2
         n.copyInto(b, p); p += n.size
         b[p++] = android.os.Build.VERSION.SDK_INT.toByte()
-        b[p] = ((major shl 8) or (minor and 0xFF)).toByte()
-        b[p + 1] = 0
+        b[p] = minor.toByte()   // LE u16 = (major<<8)|minor → C# AppVersion 0x0100 = 1.0
+        b[p + 1] = major.toByte()
         return b
     }
 

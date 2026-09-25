@@ -99,7 +99,7 @@ public struct StatusPayload
     public byte ServiceState;   // 0 stopped, 1 starting, 2 running, 3 error
     public byte InputMode;      // 0 none, 1 in-app, 2 adb-daemon, 3 accessibility-touch
     public ushort RttMs;        // device-measured RTT to PC
-    public byte LossX100;       // device-measured loss (0..10000 /100)
+    public byte LossPercent;     // device-measured loss (0..100)
     public string Model = "";
     public string DeviceName = "";
     public int SdkInt;
@@ -114,7 +114,7 @@ public struct StatusPayload
         buf[pos++] = ServiceState;
         buf[pos++] = InputMode;
         Bin.WriteU16(buf, ref pos, RttMs);
-        buf[pos++] = LossX100;
+        buf[pos++] = LossPercent;
         Bin.WriteU16(buf, ref pos, (ushort)modelBytes.Length);
         modelBytes.CopyTo(buf.AsSpan(pos));
         pos += modelBytes.Length;
@@ -133,7 +133,7 @@ public struct StatusPayload
         p.ServiceState = src[pos++];
         p.InputMode = src[pos++];
         p.RttMs = Bin.ReadU16(src, ref pos);
-        p.LossX100 = src[pos++];
+        p.LossPercent = src[pos++];
         var ml = Bin.ReadU16(src, ref pos);
         p.Model = System.Text.Encoding.UTF8.GetString(src.Slice(pos, ml));
         pos += ml;
