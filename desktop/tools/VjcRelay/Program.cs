@@ -34,8 +34,9 @@ var cleanup = new Timer(_ =>
 {
     foreach (var kvp in rooms)
         if (DateTime.UtcNow - kvp.Value.LastSeen > TimeSpan.FromSeconds(30))
-            RoomEntry? _dropped;
-                rooms.TryRemove(kvp.Key, out _dropped);
+        {
+            rooms.TryRemove(kvp.Key, out RoomEntry? _);
+        }
 }, null, 5000, 5000);
 
 try
