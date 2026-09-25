@@ -20,35 +20,42 @@ using System.Text;
 int port = 8722;
 if (args.Length > 0 && int.TryParse(args[0], out var p)) port = p;
 
-var room = new ConcurrentDictionary<string, RoomEntry>(StringComparer.Ordinal);
-var magic = new byte[] { (byte)'V', (byte)'J', (byte)'C', (byte)'1' };
+var rooms = new ConcurrentDictionary<string, RoomEntry>(StringComparer.Ordinal);
+byte[] magic = "VJC1"u8.ToArray();
 
 using var udp = new UdpClient(AddressFamily.InterNetwork);
 udp.Client.Bind(new IPEndPoint(IPAddress.Any, port));
 Console.WriteLine($"[vjc-relay] listening UDP :{port}");
 
+using var cts = new CancellationTokenSource();
+Console.CancelKeyPress += (_, e) => { e.Cancel = true; cts.Cancel(); };
+
 var cleanup = new Timer(_ =>
 {
-    foreach (var (key, e) in room)
-        if (DateTime.UtcNow - e.LastSeen > TimeSpan.FromSeconds(30))
-            room.TryRemove(key, out _);
+    foreach (var kvp in rooms)
+        if (DateTime.UtcNow - kvp.Value.LastSeen > TimeSpan.FromSeconds(30))
+            rooms.TryRemove(kvp.Key, out _);
 }, null, 5000, 5000);
 
-while (true)
+try
 {
-    var (data, from) = await udp.ReceiveAsync();
-    try { Handle(data, from); }
-    catch (Exception ex) { Console.WriteLine($"[vjc-relay] error: {ex.Message}"); }
+    while (!cts.IsCancellationRequested)
+    {
+        UdpReceiveResult r = await udp.ReceiveAsync(cts.Token).ConfigureAwait(false);
+        try { Handle(r.Buffer, r.RemoteEndPoint); }
+        catch (Exception ex) { Console.WriteLine($"[vjc-relay] error: {ex.Message}"); }
+    }
 }
+catch (OperationCanceledException) { /* ctrl-c */ }
 
 void Handle(byte[] data, IPEndPoint from)
 {
     if (data.Length < 13 || !data.AsSpan(0, 4).SequenceEqual(magic)) return; // not ours
     byte op = data[4];
     string code = Encoding.ASCII.GetString(data, 5, 8);
-    if (code.Length != 8 || !code.All(c => char.IsLetterOrDigit(c))) return;
+    if (code.Length != 8 || !code.All(char.IsLetterOrDigit)) return;
 
-    var entry = room.GetOrAdd(code, _ => new RoomEntry());
+    var entry = rooms.GetOrAdd(code, static _ => new RoomEntry());
     lock (entry)
     {
         entry.LastSeen = DateTime.UtcNow;
@@ -57,24 +64,24 @@ void Handle(byte[] data, IPEndPoint from)
             case 1: // JOIN
             {
                 IPEndPoint? other = null;
-                if (entry.A != null && !entry.A.Value.Equals(from)) { entry.B = from; other = entry.A; }
-                else if (entry.B != null && !entry.B.Value.Equals(from)) { entry.A = from; other = entry.B; }
+                if (entry.A != null && !entry.A.Equals(from)) { entry.B = from; other = entry.A; }
+                else if (entry.B != null && !entry.B.Equals(from)) { entry.A = from; other = entry.B; }
                 else if (entry.A == null) { entry.A = from; }
                 else { entry.B = from; }
 
                 udp.Send(MakeJoinAck(code), from);
                 if (other != null)
                 {
-                    udp.Send(MakePeerInfo(code, from), other!.Value);
-                    udp.Send(MakePeerInfo(code, other.Value), from);
+                    udp.Send(MakePeerInfo(code, from), other);
+                    udp.Send(MakePeerInfo(code, other), from);
                     Console.WriteLine($"[vjc-relay] room {code}: pair {entry.A} <-> {entry.B}");
                 }
                 break;
             }
             case 3: // WRAP -> forward to peer untouched
             {
-                if (from.Equals(entry.A) && entry.B != null) udp.Send(data, entry.B.Value);
-                else if (from.Equals(entry.B) && entry.A != null) udp.Send(data, entry.A.Value);
+                if (from.Equals(entry.A) && entry.B != null) udp.Send(data, entry.B);
+                else if (from.Equals(entry.B) && entry.A != null) udp.Send(data, entry.A);
                 break;
             }
         }
@@ -96,8 +103,7 @@ static byte[] MakePeerInfo(string code, IPEndPoint ep)
     "VJC1"u8.CopyTo(buf);
     buf[4] = 2;
     Encoding.ASCII.GetBytes(code).CopyTo(buf, 5);
-    var ip = ep.Address.GetAddressBytes();
-    ip.CopyTo(buf, 13);
+    ep.Address.GetAddressBytes().CopyTo(buf, 13);
     buf[17] = (byte)(ep.Port >> 8);
     buf[18] = (byte)ep.Port;
     return buf;
