@@ -23,7 +23,7 @@ public sealed class UdpPump : IDisposable
     public event Action<byte, string, IPEndPoint?>? RelayControl;
 
     /// <summary>Relay-wrapped payload for a room (already stripped by this pump).</summary>
-    public event Action<string, ReadOnlySpan<byte>>? RelayPayload;
+    public event Action<string, byte[]>? RelayPayload;
 
     public int BoundPort => ((IPEndPoint)_client.Client.LocalEndPoint!).Port;
     public bool IsClosed => _closed;
@@ -64,7 +64,9 @@ public sealed class UdpPump : IDisposable
             string room = System.Text.Encoding.ASCII.GetString(data, 5, Wire.RoomCodeLen);
             if (op == Wire.RelayOpWrap)
             {
-                RelayPayload?.Invoke(room, new ReadOnlySpan<byte>(data, Wire.RelayHeaderSize, data.Length - Wire.RelayHeaderSize));
+                var stripped = new byte[data.Length - Wire.RelayHeaderSize];
+                Buffer.BlockCopy(data, Wire.RelayHeaderSize, stripped, 0, stripped.Length);
+                RelayPayload?.Invoke(room, stripped);
                 return;
             }
             IPEndPoint? peerEp = null;

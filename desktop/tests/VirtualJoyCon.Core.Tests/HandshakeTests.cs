@@ -100,12 +100,12 @@ public class HandshakeTests
         b.StartClientHandshake();
         pump.Run();
         // trigger a ping through the tick path on the server link
-        for (int i = 0; i < 40 && !a.HasLatency; i++)
+        for (int i = 0; i < 40 && !a.Rtt.HasSamples; i++)
         {
             a.ForcePingForTests();
             pump.Run();
             Thread.Sleep(25);
         }
-        Assert.True(a.HasLatency);
+        Assert.True(a.Rtt.HasSamples);
     }
 }

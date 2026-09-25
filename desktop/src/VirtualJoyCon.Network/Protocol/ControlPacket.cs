@@ -96,6 +96,8 @@ public struct StatePayload
 /// <summary>Device -> PC status report (section 2: android state + service state).</summary>
 public struct StatusPayload
 {
+    public StatusPayload() { }
+
     public byte ServiceState;   // 0 stopped, 1 starting, 2 running, 3 error
     public byte InputMode;      // 0 none, 1 in-app, 2 adb-daemon, 3 accessibility-touch
     public ushort RttMs;        // device-measured RTT to PC

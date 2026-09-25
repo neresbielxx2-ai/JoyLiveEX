@@ -25,10 +25,12 @@ public static class PacketCodec
 
     public static int PackPlain(byte type, uint session, uint seq, ReadOnlySpan<byte> payload, Span<byte> dest)
         => Pack(type, session, seq, payload, dest);
+
+    public static bool TryParse(ReadOnlySpan<byte> src, out Packet packet) => Packet.TryParse(src, out packet);
 }
 
 /// <summary>Decoded view of one packet. Payload spans into the receive buffer.</summary>
-public readonly struct Packet
+public readonly ref struct Packet
 {
     public readonly byte Version;
     public readonly byte Type;

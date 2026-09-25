@@ -41,12 +41,17 @@ jobs:
           echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" | tee -a "$GITHUB_ENV"
           export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager --install "platforms;android-34" "build-tools;34.0.0" 2>&1 | tail -2 || true
           ls "$ANDROID_HOME/build-tools" | head -5
           ls "$ANDROID_HOME/platforms" | head -5
       - name: Build vjc-daemon.jar
         working-directory: android
-        run: ./gradlew :daemon:dexJar --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :daemon:dexJar --no-daemon --stacktrace 2>&1 | tee /tmp/g.log || {
+            grep -E "FAILURE|What went wrong|^e: |error:" -A2 /tmp/g.log | head -40 | sed 's/^/::error::/' >> "$GITHUB_STEP_SUMMARY"
+            exit 1; }
       - uses: actions/upload-artifact@v4
         with:
           name: vjc-daemon
@@ -125,13 +130,22 @@ jobs:
           echo "ANDROID_HOME=${ANDROID_HOME:-/usr/local/lib/android/sdk}" | tee -a "$GITHUB_ENV"
           export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
           export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
           sdkmanager --install "platforms;android-34" "build-tools;34.0.0" 2>&1 | tail -2 || true
       - name: Unit tests
         working-directory: android
-        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace --continue 2>&1 | tee /tmp/g.log || {
+            grep -E "^e: |error:|FAILURE|What went wrong" -A2 /tmp/g.log | head -60 | sed 's/^/::error::/' >> "$GITHUB_STEP_SUMMARY"
+            exit 1; }
       - name: Build APKs
         working-directory: android
-        run: ./gradlew :app:assembleRelease :app:assembleDebug :daemon:dexJar --no-daemon --stacktrace
+        run: |
+          set -o pipefail
+          ./gradlew :app:assembleRelease :app:assembleDebug :daemon:dexJar --no-daemon --stacktrace 2>&1 | tee /tmp/g2.log || {
+            grep -E "^e: |error:|FAILURE|What went wrong" -A2 /tmp/g2.log | head -60 | sed 's/^/::error::/' >> "$GITHUB_STEP_SUMMARY"
+            exit 1; }
       - name: Stage artifacts
         run: |
           cp android/app/build/outputs/apk/release/app-release.apk VirtualJoyCon-Android.apk

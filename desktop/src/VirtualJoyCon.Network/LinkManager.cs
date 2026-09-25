@@ -278,7 +278,7 @@ public sealed class LinkManager : IDisposable
         _udp?.SendTo(resp, to);
     }
 
-    private void OnRelayPayload(string room, ReadOnlySpan<byte> payload)
+    private void OnRelayPayload(string room, byte[] payload)
     {
         if (_relayRoom == null || room != _relayRoom) return;
         foreach (var (link, b) in _links)
