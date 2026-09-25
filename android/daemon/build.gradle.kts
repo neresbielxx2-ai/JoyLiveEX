@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("java-library")
 }
@@ -17,7 +19,7 @@ fun androidHomeDir(): File? {
     System.getenv("ANDROID_SDK_ROOT")?.let { File(it) }?.takeIf { it.isDirectory }?.let { return it }
     val local = rootProject.file("local.properties")
     if (local.exists()) {
-        val props = java.util.Properties()
+        val props = Properties()
         local.inputStream().use { props.load(it) }
         val dir = props.getProperty("sdk.dir")?.let { File(it) }?.takeIf { f -> f.isDirectory }
         if (dir != null) return dir

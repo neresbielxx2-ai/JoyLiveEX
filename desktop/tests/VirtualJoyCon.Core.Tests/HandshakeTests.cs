@@ -1,3 +1,4 @@
+using Xunit;
 using VirtualJoyCon.ControllerModel;
 using VirtualJoyCon.Diagnostics;
 using VirtualJoyCon.Network.Link;
