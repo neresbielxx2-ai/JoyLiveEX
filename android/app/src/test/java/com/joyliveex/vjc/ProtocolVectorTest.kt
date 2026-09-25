@@ -46,10 +46,10 @@ class ProtocolVectorTest {
     fun statePayloadGoldenBytes() {
         val bb = ByteBuffer.allocate(Wire.STATE_SIZE).order(ByteOrder.LITTLE_ENDIAN)
         bb.putInt(0x00004041)                 // A | ZL | DPAD_UP
-        bb.putShort((0.5f * 32767).toShort())
+        bb.putShort((0.5f * 32767).toInt().toShort())
         bb.putShort((-0.25f * 32767).toInt().toShort())
-        bb.putShort((-1.0f * 32767).toShort())
-        bb.putShort((0.25f * 32767).toShort())
+        bb.putShort((-1.0f * 32767).toInt().toShort())
+        bb.putShort((0.25f * 32767).toInt().toShort())
         bb.put(255.toByte()); bb.put(64.toByte()); bb.put(1); bb.put(0)
         bb.putInt(0x12345678)
         assertEquals("41400000004000e001800020ff40010078563412", hex(bb.array()))

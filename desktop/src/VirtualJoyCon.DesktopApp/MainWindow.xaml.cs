@@ -171,11 +171,11 @@ public partial class MainWindow : Window
         TransportText.Text = connected
             ? _hub.ActiveTransport switch { LinkTransport.Usb => "USB", LinkTransport.Internet => _hub.DirectP2P ? "UDP (P2P)" : "UDP (relay)", _ => "UDP (LAN)" }
             : "—";
-        DaemonText.Text = _daemonLauncher?.DaemonRunning == true ? "vjc-daemon ATIVO" : connected && _hub.DaemonReady ? "ATIVO (via app)" : "parado";
-        else if (_usdBlink)
-        {
-            DaemonText.Text = "USB pronto — INICIAR ativa o daemon de entrada";
-        }
+        DaemonText.Text =
+            _daemonLauncher?.DaemonRunning == true ? "vjc-daemon ATIVO"
+            : connected && _hub.DaemonReady ? "ATIVO (via app)"
+            : _usdBlink ? "USB pronto — INICIAR ativa o daemon de entrada"
+            : "parado";
 
         PadText.Text = _hub.Gamepad.AnyConnected
             ? string.Join(", ", _hub.Gamepad.Slots.Where(s => s.Connected).Select(s => s.Name))
