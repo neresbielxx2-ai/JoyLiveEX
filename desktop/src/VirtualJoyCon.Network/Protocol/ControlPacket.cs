@@ -56,7 +56,7 @@ public struct StatePayload
             RightY = ControllerState.ToShort(s.RightY),
             Lt = ControllerState.ToByte(s.LeftTrigger),
             Rt = ControllerState.ToByte(s.RightTrigger),
-            Hat = Hat.FromState(s.Buttons),
+            Hat = HatCode.FromState(s.Buttons),
             Flags = 0,
             TimestampMsLo = (uint)(ts & 0xFFFFFFFF),
         };
@@ -67,18 +67,7 @@ public struct StatePayload
         // Hat is authoritative for the d-pad: materialize it back into button bits so
         // consumers only ever look at Buttons.
         uint b = Buttons & ~(uint)(ButtonFlags.DPadUp | ButtonFlags.DPadDown | ButtonFlags.DPadLeft | ButtonFlags.DPadRight);
-        b |= Hat switch
-        {
-            Hat.N => (uint)ButtonFlags.DPadUp,
-            Hat.S => (uint)ButtonFlags.DPadDown,
-            Hat.W => (uint)ButtonFlags.DPadLeft,
-            Hat.E => (uint)ButtonFlags.DPadRight,
-            Hat.NE => (uint)(ButtonFlags.DPadUp | ButtonFlags.DPadRight),
-            Hat.NW => (uint)(ButtonFlags.DPadUp | ButtonFlags.DPadLeft),
-            Hat.SE => (uint)(ButtonFlags.DPadDown | ButtonFlags.DPadRight),
-            Hat.SW => (uint)(ButtonFlags.DPadDown | ButtonFlags.DPadLeft),
-            _ => 0u,
-        };
+        b |= HatCode.ToButtons(Hat);
         var s = new ControllerState
         {
             Buttons = b,

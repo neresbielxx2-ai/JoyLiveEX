@@ -318,8 +318,8 @@ public sealed class VjcLink
                 }
                 else
                 {
-                    AuthFailed = true;
                     Phase = PhaseFailed;
+                    try { AuthFailed?.Invoke(this); } catch { }
                     Close("denied");
                 }
                 break;

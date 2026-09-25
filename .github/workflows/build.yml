@@ -50,7 +50,7 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew :daemon:dexJar --no-daemon --stacktrace 2>&1 | tee /tmp/g.log || {
-            grep -E "FAILURE|What went wrong|^e: |error:" -A2 /tmp/g.log | head -40 | sed 's/^/::error::/' >> "$GITHUB_STEP_SUMMARY"
+            grep -E "FAILURE|What went wrong|^e: |error:" /tmp/g.log | head -40 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - uses: actions/upload-artifact@v4
         with:
@@ -137,14 +137,14 @@ jobs:
         run: |
           set -o pipefail
           ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace --continue 2>&1 | tee /tmp/g.log || {
-            grep -E "^e: |error:|FAILURE|What went wrong" -A2 /tmp/g.log | head -60 | sed 's/^/::error::/' >> "$GITHUB_STEP_SUMMARY"
+            grep -E "^e: |error:|FAILURE|What went wrong" /tmp/g.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - name: Build APKs
         working-directory: android
         run: |
           set -o pipefail
           ./gradlew :app:assembleRelease :app:assembleDebug :daemon:dexJar --no-daemon --stacktrace 2>&1 | tee /tmp/g2.log || {
-            grep -E "^e: |error:|FAILURE|What went wrong" -A2 /tmp/g2.log | head -60 | sed 's/^/::error::/' >> "$GITHUB_STEP_SUMMARY"
+            grep -E "^e: |error:|FAILURE|What went wrong" /tmp/g2.log | head -60 | sed 's/^/::error::/' | tee -a "$GITHUB_STEP_SUMMARY"
             exit 1; }
       - name: Stage artifacts
         run: |

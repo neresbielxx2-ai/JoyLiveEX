@@ -142,7 +142,7 @@ public class CurveTests
     public void Hat_FromState()
     {
         uint b = (uint)ButtonFlags.DPadUp | (uint)ButtonFlags.DPadRight;
-        Assert.Equal(Hat.NE, Hat.FromState(b));
-        Assert.Equal(Hat.None, Hat.FromState(0));
+        Assert.Equal(HatCode.NE, HatCode.FromState(b));
+        Assert.Equal(HatCode.None, HatCode.FromState(0));
     }
 }
