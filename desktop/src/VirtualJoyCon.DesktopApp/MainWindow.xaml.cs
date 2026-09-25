@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using VirtualJoyCon.Configuration;
+using VirtualJoyCon.DesktopApp.Controls;
 using VirtualJoyCon.ControllerModel;
 using VirtualJoyCon.Diagnostics;
 using VirtualJoyCon.Network.Link;

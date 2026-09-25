@@ -54,32 +54,64 @@ public sealed class StickControl : FrameworkElement
         InvalidateVisual();
     }
 
-    protected override void OnPointerPressed(PointerEventArgs e)
+    // ---- mouse ----
+    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
-        base.OnPointerPressed(e);
+        base.OnMouseLeftButtonDown(e);
         _dragging = true;
-        CapturePointer(e.Pointer);
+        CaptureMouse();
         UpdateFrom(e.GetPosition(this));
         e.Handled = true;
     }
 
-    protected override void OnPointerMoved(PointerEventArgs e)
+    protected override void OnMouseMove(MouseEventArgs e)
     {
-        base.OnPointerMoved(e);
-        if (_dragging) UpdateFrom(e.GetPosition(this));
+        base.OnMouseMove(e);
+        if (e.LeftButton == MouseButtonState.Pressed && _dragging) UpdateFrom(e.GetPosition(this));
     }
 
-    protected override void OnPointerReleased(PointerEventArgs e)
+    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
     {
-        base.OnPointerReleased(e);
-        ReleasePointerCapture(e.Pointer);
+        base.OnMouseLeftButtonUp(e);
+        ReleaseMouseCapture();
         EndDrag();
         e.Handled = true;
     }
 
-    protected override void OnLostPointerCapture()
+    protected override void OnLostMouseCapture(MouseEventArgs e)
     {
-        base.OnLostPointerCapture();
+        base.OnLostMouseCapture(e);
+        EndDrag();
+    }
+
+    // ---- touch ----
+    protected override void OnTouchDown(TouchEventArgs e)
+    {
+        base.OnTouchDown(e);
+        _dragging = true;
+        CaptureTouch(e.TouchDevice);
+        UpdateFrom(e.GetTouchPoint(this).Position);
+        e.Handled = true;
+    }
+
+    protected override void OnTouchMove(TouchEventArgs e)
+    {
+        base.OnTouchMove(e);
+        if (_dragging) UpdateFrom(e.GetTouchPoint(this).Position);
+        e.Handled = true;
+    }
+
+    protected override void OnTouchUp(TouchEventArgs e)
+    {
+        base.OnTouchUp(e);
+        ReleaseTouchCapture(e.TouchDevice);
+        EndDrag();
+        e.Handled = true;
+    }
+
+    protected override void OnTouchLostCapture(TouchEventArgs e)
+    {
+        base.OnTouchLostCapture(e);
         EndDrag();
     }
 

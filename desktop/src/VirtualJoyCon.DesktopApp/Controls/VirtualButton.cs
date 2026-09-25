@@ -52,26 +52,50 @@ public sealed class VirtualButton : FrameworkElement
         Dispatcher.InvokeAsync(InvalidateVisual, DispatcherPriority.Send);
     }
 
-    protected override void OnPointerPressed(PointerEventArgs e)
+    // ---- mouse path ----
+    protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
-        base.OnPointerPressed(e);
-        CapturePointer(e.Pointer);
+        base.OnMouseLeftButtonDown(e);
+        CaptureMouse();
         SetHeld(true);
         e.Handled = true;
     }
 
-    protected override void OnPointerReleased(PointerEventArgs e)
+    protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
     {
-        base.OnPointerReleased(e);
-        ReleasePointerCapture(e.Pointer);
+        base.OnMouseLeftButtonUp(e);
+        ReleaseMouseCapture();
         SetHeld(false);
         e.Handled = true;
     }
 
-    protected override void OnLostPointerCapture()
+    protected override void OnLostMouseCapture(MouseEventArgs e)
     {
-        base.OnLostPointerCapture();
-        SetHeld(false); // anti-stuck: capture stolen (alt-tab, popup, touch cancel)
+        base.OnLostMouseCapture(e);
+        SetHeld(false); // anti-stuck: capture stolen (alt-tab, popup)
+    }
+
+    // ---- touch path (per-finger isolation: each control captures its own touch) ----
+    protected override void OnTouchDown(TouchEventArgs e)
+    {
+        base.OnTouchDown(e);
+        CaptureTouch(e.TouchDevice);
+        SetHeld(true);
+        e.Handled = true;
+    }
+
+    protected override void OnTouchUp(TouchEventArgs e)
+    {
+        base.OnTouchUp(e);
+        ReleaseTouchCapture(e.TouchDevice);
+        SetHeld(false);
+        e.Handled = true;
+    }
+
+    protected override void OnTouchLostCapture(TouchEventArgs e)
+    {
+        base.OnTouchLostCapture(e);
+        SetHeld(false); // anti-stuck on swipe-away / system cancel
     }
 
     protected override void OnRender(DrawingContext dc)

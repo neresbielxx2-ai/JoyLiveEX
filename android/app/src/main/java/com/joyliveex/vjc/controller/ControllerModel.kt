@@ -1,4 +1,5 @@
 package com.joyliveex.vjc.controller
+import kotlin.math.roundToInt
 
 /** Button bit layout — mirror of ButtonFlags.cs / Constants.java. Do not renumber! */
 object Buttons {
@@ -86,7 +87,7 @@ class ControllerState {
     }
 
     companion object {
-        fun toShort(v: Float): Short = (v.coerceIn(-1f, 1f) * 32767f).toInt().toShort()
+        fun toShort(v: Float): Short = (v.coerceIn(-1f, 1f) * 32767f).roundToInt().toShort()
         fun toByte(v: Float): Int = (v.coerceIn(0f, 1f) * 255f).toInt()
     }
 }
