@@ -193,8 +193,9 @@ jobs:
           set -o pipefail
           TAG="v$(date -u +%Y%m%d.%H%M%S)"
           ls -la VirtualJoyCon-Windows.zip VirtualJoyCon-Android.apk VirtualJoyCon-Android-debug.apk || true
-          if gh release view "$TAG" >/dev/null 2>&1; then gh release delete "$TAG" --yes || true; fi
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then gh release delete "$TAG" --yes --repo "$GITHUB_REPOSITORY" || true; fi
           gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
             --draft \
             --target "${{ github.sha }}" \
             --title "Virtual Joy-Con — build ${{ github.sha }}" \
