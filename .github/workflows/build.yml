@@ -189,12 +189,18 @@ jobs:
         with:
           name: VirtualJoyCon-Android
       - name: Create draft release
-        continue-on-error: true
         run: |
-          gh release create "v$(date +%Y%m%d.%H%M)" \
+          set -o pipefail
+          TAG="v$(date -u +%Y%m%d.%H%M%S)"
+          ls -la VirtualJoyCon-Windows.zip VirtualJoyCon-Android.apk VirtualJoyCon-Android-debug.apk || true
+          if gh release view "$TAG" >/dev/null 2>&1; then gh release delete "$TAG" --yes || true; fi
+          gh release create "$TAG" \
             --draft \
+            --target "${{ github.sha }}" \
             --title "Virtual Joy-Con — build ${{ github.sha }}" \
             --notes "Artifacts: VirtualJoyCon-Windows.zip (EXE + relay) e VirtualJoyCon-Android.apk (release + debug). O APK release usa a debug-key quando VJC_KEYSTORE nao esta configurado — veja docs/BUILD.md." \
-            VirtualJoyCon-Windows.zip VirtualJoyCon-Android.apk VirtualJoyCon-Android-debug.apk
+            VirtualJoyCon-Windows.zip VirtualJoyCon-Android.apk VirtualJoyCon-Android-debug.apk 2>&1 | tee /tmp/rel.log || {
+            sed 's/^/::error::/' /tmp/rel.log | head -10; exit 1; }
+          echo "release created: $TAG" >> "$GITHUB_STEP_SUMMARY"
         env:
           GH_TOKEN: ${{ github.token }}
