@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualJoyCon.ControllerModel\VirtualJoyCon.ControllerModel.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Configuration\VirtualJoyCon.Configuration.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Network\VirtualJoyCon.Network.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.InputEngine\VirtualJoyCon.InputEngine.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Diagnostics\VirtualJoyCon.Diagnostics.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.UsbAdb\VirtualJoyCon.UsbAdb.csproj" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,28 @@
+# .NET
+bin/
+obj/
+publish/
+*.user
+
+# Gradle / Android
+.gradle/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.jks
+!debug.keystore
+
+# IDE
+.vs/
+.idea/
+*.iml
+.DS_Store
+
+# build staging
+zipstage/
+/assets/
+docs-vec.txt

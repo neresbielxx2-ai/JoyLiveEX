@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualJoyCon.ControllerModel\VirtualJoyCon.ControllerModel.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Diagnostics\VirtualJoyCon.Diagnostics.csproj" />
+  </ItemGroup>
+</Project>

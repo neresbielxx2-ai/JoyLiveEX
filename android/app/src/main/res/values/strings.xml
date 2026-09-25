@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Virtual Joy-Con</string>
+    <string name="a11y_desc">Virtual Joy-Con: transforma os eventos recebidos do PC em toques na tela (modo de compatibilidade para jogos que não aceitam gamepad). Nenhum dado é enviado para fora do app.</string>
+</resources>

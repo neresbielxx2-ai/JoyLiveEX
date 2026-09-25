@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Vjc" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#1B1D22</item>
+        <item name="android:statusBarColor">#15171C</item>
+        <item name="android:navigationBarColor">#15171C</item>
+    </style>
+
+    <style name="Theme.Vjc.Fullscreen">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+</resources>

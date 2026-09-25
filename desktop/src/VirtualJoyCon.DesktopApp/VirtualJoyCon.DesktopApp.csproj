@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <UseWPF>true</UseWPF>
+    <AssemblyName>VirtualJoyCon</AssemblyName>
+    <RootNamespace>VirtualJoyCon.DesktopApp</RootNamespace>
+    <Version>1.0.0</Version>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyTitle>Virtual Joy-Con (JoyLiveEX)</AssemblyTitle>
+    <Product>Virtual Joy-Con</Product>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <SelfContained Condition="'$(PublishSingleFile)' != ''">true</SelfContained>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualJoyCon.ControllerModel\VirtualJoyCon.ControllerModel.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Configuration\VirtualJoyCon.Configuration.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Network\VirtualJoyCon.Network.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.UsbAdb\VirtualJoyCon.UsbAdb.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.InputEngine\VirtualJoyCon.InputEngine.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.VirtualController\VirtualJoyCon.VirtualController.csproj" />
+    <ProjectReference Include="..\VirtualJoyCon.Diagnostics\VirtualJoyCon.Diagnostics.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\app.png" Condition="Exists('Assets\app.png')" />
+    <Content Include="..\..\tools\daemon\vjc-daemon.jar" Link="vjc-daemon.jar" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\tools\daemon\vjc-daemon.jar')" />
+    <Content Include="..\..\tools\daemon\README.txt" Link="vjc-daemon-README.txt" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\..\tools\daemon\README.txt')" />
+  </ItemGroup>
+</Project>

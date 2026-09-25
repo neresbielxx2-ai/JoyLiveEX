@@ -1,0 +1,32 @@
+<Window x:Class="VirtualJoyCon.DesktopApp.WizardWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bem-vindo" Width="560" Height="440" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Bg}" TextElement.Foreground="{DynamicResource Text}">
+    <Grid Margin="30">
+        <StackPanel HorizontalAlignment="Center">
+            <Border Width="72" Height="72" CornerRadius="18" Background="{DynamicResource Card}" Margin="0,4,0,14">
+                <Image x:Name="WizardLogo" Width="54" Height="54"/>
+            </Border>
+            <TextBlock Text="VIRTUAL JOY-CON" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center"/>
+            <TextBlock Text="Transforme seu PC em um controle virtual para Android"
+                       FontSize="13" Foreground="{DynamicResource Muted}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="10,14,10,0" FontSize="12"
+                       Foreground="{DynamicResource Muted}"
+                       Text="Dois Joy-Cons virtuais no PC enviam eventos de gamepad para o celular por USB (ADB) ou pela Internet/LAN — sem controle físico obrigatório e sem depender de servidores pagos."/>
+
+            <TextBlock x:Name="UsbHint" Text="" HorizontalAlignment="Center" Margin="0,12,0,0" FontSize="12"
+                       Foreground="{DynamicResource Ok}" FontWeight="SemiBold"/>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,18,0,0">
+                <Button x:Name="UsbButton" Content="USB (ADB)" Width="150" Height="46" FontSize="14" FontWeight="Bold"
+                        Click="Usb_Click" Margin="0,0,12,0"/>
+                <Button x:Name="NetButton" Content="LAN / Internet" Width="150" Height="46" FontSize="14" FontWeight="Bold"
+                        Click="Net_Click"/>
+            </StackPanel>
+            <CheckBox x:Name="DontShow" Content="Não mostrar na inicialização" IsChecked="True" Margin="0,18,0,0"
+                      HorizontalAlignment="Center" FontSize="12"/>
+        </StackPanel>
+    </Grid>
+</Window>

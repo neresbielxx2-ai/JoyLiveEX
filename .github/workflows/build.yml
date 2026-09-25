@@ -1,0 +1,166 @@
+name: Build (Windows EXE + Android APK)
+
+on:
+  push:
+    branches: ["main", "master", "arena/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------- tests
+  tests:
+    name: Unit tests (protocol + model)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Restore & test
+        run: dotnet test desktop/tests/VirtualJoyCon.Core.Tests/VirtualJoyCon.Core.Tests.csproj -c Release --logger "console;verbosity=normal"
+
+  # ------------------------------------------------------- input daemon (dex)
+  daemon:
+    name: Android input daemon (d8 dex jar)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install platform & build-tools
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" >/dev/null
+      - name: Build vjc-daemon.jar
+        working-directory: android
+        run: ./gradlew :daemon:dexJar --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vjc-daemon
+          path: android/daemon/build/libs/vjc-daemon.jar
+
+  # ---------------------------------------------------------------- windows
+  windows:
+    name: Windows EXE
+    needs: daemon
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Download input daemon
+        uses: actions/download-artifact@v4
+        with:
+          name: vjc-daemon
+          path: desktop/tools/daemon
+      - name: Daemon README
+        shell: pwsh
+        run: |
+          "Virtual Joy-Con input daemon - build of android/daemon (d8 dex jar)." | Set-Content desktop/tools/daemon/README.txt
+      - name: Publish EXE (self-contained single file)
+        run: >
+          dotnet publish desktop/src/VirtualJoyCon.DesktopApp/VirtualJoyCon.DesktopApp.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+          -o publish/VirtualJoyCon
+      - name: Publish relay tool
+        run: >
+          dotnet publish desktop/tools/VjcRelay/VjcRelay.csproj
+          -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true
+          -o publish/VjcRelay
+      - name: Stage zip
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force zipstage | Out-Null
+          Copy-Item -Recurse -Force publish/VirtualJoyCon/* zipstage/
+          New-Item -ItemType Directory -Force zipstage/relay | Out-Null
+          Copy-Item -Force publish/VjcRelay/* zipstage/relay/
+          Set-Content -Path zipstage/LEIA-ME.txt -Encoding utf8 -Value @(
+            "VIRTUAL JOY-CON (JoyLiveEX) - app para Windows",
+            "",
+            "1. Execute VirtualJoyCon.exe",
+            "2. Modo USB: instale o Android platform-tools (winget install Google.PlatformTools),",
+            "   ative a Depuracao USB no celular, conecte o cabo e autorize o computador.",
+            "3. Modo LAN/Internet: abra o app Virtual Joy-Con no Android e use o codigo da sessao exibido aqui.",
+            "4. Clique em INICIAR CONTROLE. O daemon de entrada (vjc-daemon.jar) e enviado ao celular",
+            "   apenas com sua permissao, via adb shell - nenhuma instalacao silenciosa.",
+            "",
+            "relay opcional para Internet entre redes diferentes: pasta relay/VjcRelay.exe (porta UDP 8722)."
+          )
+      - name: Zip artifact
+        shell: pwsh
+        run: Compress-Archive -Path zipstage/* -DestinationPath VirtualJoyCon-Windows.zip -Force
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VirtualJoyCon-Windows
+          path: VirtualJoyCon-Windows.zip
+
+  # ---------------------------------------------------------------- android
+  android:
+    name: Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install platform & build-tools
+        run: sdkmanager --install "platforms;android-34" "build-tools;34.0.0" >/dev/null
+      - name: Unit tests
+        working-directory: android
+        run: ./gradlew :app:testDebugUnitTest --no-daemon --stacktrace
+      - name: Build APKs
+        working-directory: android
+        run: ./gradlew :app:assembleRelease :app:assembleDebug :daemon:dexJar --no-daemon --stacktrace
+      - name: Stage artifacts
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk VirtualJoyCon-Android.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk VirtualJoyCon-Android-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VirtualJoyCon-Android
+          path: |
+            VirtualJoyCon-Android.apk
+            VirtualJoyCon-Android-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vjc-daemon-apk-pair
+          path: android/daemon/build/libs/vjc-daemon.jar
+
+  # ---------------------------------------------------------- GitHub Release
+  release:
+    name: GitHub Release
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: [windows, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: VirtualJoyCon-Windows
+      - uses: actions/download-artifact@v4
+        with:
+          name: VirtualJoyCon-Android
+      - name: Create draft release
+        continue-on-error: true
+        run: |
+          gh release create "v$(date +%Y%m%d.%H%M)" \
+            --draft \
+            --title "Virtual Joy-Con — build ${{ github.sha }}" \
+            --notes "Artifacts: VirtualJoyCon-Windows.zip (EXE + relay) e VirtualJoyCon-Android.apk (release + debug). O APK release usa a debug-key quando VJC_KEYSTORE nao esta configurado — veja docs/BUILD.md." \
+            VirtualJoyCon-Windows.zip VirtualJoyCon-Android.apk VirtualJoyCon-Android-debug.apk
+        env:
+          GH_TOKEN: ${{ github.token }}

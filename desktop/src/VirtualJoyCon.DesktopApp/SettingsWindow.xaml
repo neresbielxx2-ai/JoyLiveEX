@@ -1,0 +1,240 @@
+<Window x:Class="VirtualJoyCon.DesktopApp.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Configurações — VIRTUAL JOY-CON" Width="820" Height="640" MinWidth="720" MinHeight="540"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource Bg}" TextElement.Foreground="{DynamicResource Text}">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TabControl x:Name="Tabs" Background="Transparent" BorderThickness="0">
+            <!-- ===================== CONTROLS ===================== -->
+            <TabItem Header="CONTROLES">
+                <Grid Margin="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="ANALÓGICO ESQUERDO" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="56"/></Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Deadzone" VerticalAlignment="Center"/>
+                            <Slider Grid.Row="0" Grid.Column="1" x:Name="Ldz" Minimum="0" Maximum="0.9" TickFrequency="0.01"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" x:Name="LdzVal" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                            <TextBlock Grid.Row="1" Text="Sensibilidade" VerticalAlignment="Center"/>
+                            <Slider Grid.Row="1" Grid.Column="1" x:Name="Lsens" Minimum="0.2" Maximum="3" TickFrequency="0.05"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" x:Name="LsensVal" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                            <TextBlock Grid.Row="2" Text="Intensidade máxima" VerticalAlignment="Center"/>
+                            <Slider Grid.Row="2" Grid.Column="1" x:Name="Lmax" Minimum="0.1" Maximum="1" TickFrequency="0.05"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" x:Name="LmaxVal" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                            <TextBlock Grid.Row="3" Text="Curva" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1" x:Name="Lcurve" SelectedIndex="0" Margin="0,4,0,0">
+                                <ComboBoxItem>Linear</ComboBoxItem>
+                                <ComboBoxItem>Suave</ComboBoxItem>
+                                <ComboBoxItem>Agressiva</ComboBoxItem>
+                                <ComboBoxItem>Custom (expoente)</ComboBoxItem>
+                            </ComboBox>
+                            <TextBlock Grid.Row="4" Text="Expoente" VerticalAlignment="Center"/>
+                            <Slider Grid.Row="4" Grid.Column="1" x:Name="Lexpo" Minimum="0.2" Maximum="4" TickFrequency="0.1"/>
+                            <TextBlock Grid.Row="4" Grid.Column="2" x:Name="LexpoVal" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                        </Grid>
+                        <CheckBox x:Name="Linvert" Content="Inverter Y" Margin="0,8,0,0"/>
+                        <Separator Margin="0,10"/>
+                        <TextBlock Text="ANALÓGICO DIREITO" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                        <Grid Margin="0,8,0,0">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="56"/></Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                            <TextBlock Grid.Row="0" Text="Deadzone" VerticalAlignment="Center"/>
+                            <Slider Grid.Row="0" Grid.Column="1" x:Name="Rdz" Minimum="0" Maximum="0.9" TickFrequency="0.01"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" x:Name="RdzVal" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                            <TextBlock Grid.Row="1" Text="Sensibilidade" VerticalAlignment="Center"/>
+                            <Slider Grid.Row="1" Grid.Column="1" x:Name="Rsens" Minimum="0.2" Maximum="3" TickFrequency="0.05"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" x:Name="RsensVal" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                            <TextBlock Grid.Row="2" Text="Curva" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1" x:Name="Rcurve" SelectedIndex="0">
+                                <ComboBoxItem>Linear</ComboBoxItem>
+                                <ComboBoxItem>Suave</ComboBoxItem>
+                                <ComboBoxItem>Agressiva</ComboBoxItem>
+                                <ComboBoxItem>Custom (expoente)</ComboBoxItem>
+                            </ComboBox>
+                            <CheckBox Grid.Row="3" Grid.Column="1" x:Name="Rinvert" Content="Inverter Y" VerticalAlignment="Center"/>
+                        </Grid>
+                        <Separator Margin="0,10"/>
+                        <TextBlock Text="VIBRAÇÃO" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <CheckBox x:Name="VibEn" Content="Vibrar o celular ao receber eventos" VerticalAlignment="Center"/>
+                            <TextBlock Text="ms:" Margin="10,0,4,0" VerticalAlignment="Center"/>
+                            <TextBox x:Name="VibMs" Width="52" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="MAPEAMENTO DE TECLADO" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                        <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,4,0,6" Foreground="{DynamicResource Muted}"
+                                   Text="Selecione a ação e pressione a nova tecla. Botões do gamepad físico também são aceitos durante a captura."/>
+                        <Border Height="26" CornerRadius="6" Background="{DynamicResource Card}" Padding="8,4">
+                            <TextBlock x:Name="CaptureLabel" Text="pronto" FontSize="12"/>
+                        </Border>
+                        <ListBox x:Name="KeyList" Height="330" Margin="0,8,0,0" FontSize="12"
+                                 Background="{DynamicResource Panel}" BorderBrush="{DynamicResource Rail}"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="Restaurar padrão" Click="ResetKeys_Click"/>
+                            <Button Content="Limpar mapeamento do gamepad" Margin="8,0,0,0" Click="ClearPad_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- ===================== CONNECTION ===================== -->
+            <TabItem Header="CONEXÃO">
+                <StackPanel Margin="10" MaxWidth="620" HorizontalAlignment="Left">
+                    <TextBlock Text="USB / ADB" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="210"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="Caminho do adb.exe (vazio = auto)" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="AdbPathBox" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Button Grid.Column="2" Content="Procurar…" Click="FindAdb_Click" Margin="0,0,8,0"/>
+                        <Button Grid.Column="3" Content="Testar ADB" Click="TestAdb_Click"/>
+                    </Grid>
+                    <TextBlock x:Name="AdbTestResult" TextWrapping="Wrap" Margin="0,6,0,0" FontSize="11" Foreground="{DynamicResource Muted}"/>
+                    <CheckBox x:Name="StartDaemonChk" Content="Iniciar o daemon de entrada (injeção global de gamepad) automaticamente ao usar USB" Margin="0,10,0,0" IsChecked="True"/>
+                    <Separator Margin="0,10"/>
+                    <TextBlock Text="RECONEXÃO / TIMEOUT" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                    <CheckBox x:Name="AutoReconnect" Content="Reconexão automática" Margin="0,8,0,0"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock Text="Timeout (s):" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <TextBox x:Name="TimeoutBox" Width="60"/>
+                    </StackPanel>
+                    <Separator Margin="0,10"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource Muted}"
+                               Text="Importante: o app nunca instala nada sozinho. Se o adb não existir, ele orienta a instalação do platform-tools; o daemon é empacotado junto com o VirtualJoyCon.exe (vjc-daemon.jar) e enviado só quando você clica em INICIAR CONTROLE."/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- ===================== NETWORK ===================== -->
+            <TabItem Header="REDE">
+                <StackPanel Margin="10" MaxWidth="620" HorizontalAlignment="Left">
+                    <TextBlock Text="RELAY (para Internet entre redes diferentes)" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,4,0,8" Foreground="{DynamicResource Muted}"
+                               Text="O relay apenas encaminha pacotes cifrados de ponta a ponta — você pode hospedar o VjcRelay incluso no ZIP (ou Docker) em qualquer servidor com UDP liberado. Nenhuma conta ou serviço pago é obrigatório."/>
+                    <CheckBox x:Name="UseRelay" Content="Usar relay no modo Internet" Margin="0,0,0,8"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/><ColumnDefinition Width="110"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="Host" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="RelayHost" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="2" Text="Porta UDP" VerticalAlignment="Center" Margin="0,0,6,0" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Grid Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="150"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="1" x:Name="RelayPort" Width="100" HorizontalAlignment="Left"/>
+                    </Grid>
+                    <CheckBox x:Name="PreferP2P" Content="Tentar conexão direta P2P antes de usar o relay" IsChecked="True" Margin="0,8,0,0"/>
+                    <Separator Margin="0,10"/>
+                    <TextBlock Text="PORTAS" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="210"/><ColumnDefinition Width="100"/><ColumnDefinition Width="100"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="UDP (LAN/pareamento)" VerticalAlignment="Center"/>
+                        <TextBox x:Name="UdpPort" Grid.Column="1" Margin="0,0,8,0"/>
+                        <TextBlock Grid.Column="2" Text=""/>
+                    </Grid>
+                    <Grid Margin="0,6,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="210"/><ColumnDefinition Width="100"/></Grid.ColumnDefinitions>
+                        <TextBlock Text="TCP (ADB reverse / LAN)" VerticalAlignment="Center"/>
+                        <TextBox x:Name="TcpPort" Grid.Column="1"/>
+                    </Grid>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,10,0,0" Foreground="{DynamicResource Muted}"
+                               Text="Segurança: o código de pareamento só autentica a sessão (PBKDF2 + AES-GCM + janela de replay). Erros de auth são limitados a 8 tentativas/10s. 'LAN sem código' usa um código padrão fixo só para a rede local — no modo Internet a autenticação com código é sempre obrigatória."/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- ===================== ANDROID ===================== -->
+            <TabItem Header="ANDROID">
+                <StackPanel Margin="10" MaxWidth="640" HorizontalAlignment="Left">
+                    <TextBlock Text="DISPOSITIVO" FontWeight="Bold" FontSize="12" Foreground="{DynamicResource Muted}"/>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Modelo:" Foreground="{DynamicResource Muted}"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" x:Name="DevModel"/>
+                        <TextBlock Grid.Row="1" Text="Android API:" Foreground="{DynamicResource Muted}"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" x:Name="DevSdk"/>
+                        <TextBlock Grid.Row="2" Text="Estado do ADB:" Foreground="{DynamicResource Muted}"/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" x:Name="DevAdb"/>
+                        <TextBlock Grid.Row="3" Text="Estado da entrada:" Foreground="{DynamicResource Muted}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" x:Name="DevInput"/>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="Reenviar daemon ao dispositivo" Click="RestartDaemon_Click"/>
+                        <Button Content="Enviar configuração ao app" Margin="8,0,0,0" Click="PushConfig_Click"/>
+                    </StackPanel>
+                    <Separator Margin="0,10"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{DynamicResource Muted}"
+                               Text="Como funciona a compatibilidade: no USB/ADB o PC sobe um 'daemon' (vjc-daemon.jar) como usuário shell, que injeta KEYCODE/MotionEvent com SOURCE_GAMEPAD para QUALQUER app — privilégio que um APK comum não tem. Sem daemon (ou sem PC), o app usa Acessibilidade (toque) ou o modo de teste in-app. Veja docs/ANDROID-INPUT-MODES.md."/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- ===================== INTERFACE ===================== -->
+            <TabItem Header="INTERFACE">
+                <StackPanel Margin="10" MaxWidth="600" HorizontalAlignment="Left">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition Width="*"/><ColumnDefinition Width="56"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Escala da interface" VerticalAlignment="Center"/>
+                        <Slider Grid.Row="0" Grid.Column="1" x:Name="UiScale" Minimum="0.7" Maximum="1.6" TickFrequency="0.05"/>
+                        <TextBlock Grid.Row="0" Grid.Column="2" x:Name="UiScaleVal" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Text="Opacidade" VerticalAlignment="Center"/>
+                        <Slider Grid.Row="1" Grid.Column="1" x:Name="Opacity" Minimum="0.3" Maximum="1" TickFrequency="0.05"/>
+                        <TextBlock Grid.Row="1" Grid.Column="2" x:Name="OpacityVal" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="2" Text="Espaçamento (rails)" VerticalAlignment="Center"/>
+                        <Slider Grid.Row="2" Grid.Column="1" x:Name="Spacing" Minimum="0" Maximum="160" TickFrequency="1"/>
+                        <TextBlock Grid.Row="2" Grid.Column="2" x:Name="SpacingVal" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="3" Text="Tema" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="ThemeBox" SelectedIndex="0" Width="140" HorizontalAlignment="Left">
+                            <ComboBoxItem>Escuro</ComboBoxItem>
+                            <ComboBoxItem>Claro</ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                    <CheckBox x:Name="ShowLabels" Content="Mostrar legendas de teclas nos controles" Margin="0,10,0,0" IsChecked="True"/>
+                </StackPanel>
+            </TabItem>
+
+            <!-- ===================== PERFORMANCE ===================== -->
+            <TabItem Header="DESEMPENHO">
+                <StackPanel Margin="10" MaxWidth="600" HorizontalAlignment="Left">
+                    <Grid>
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="220"/><ColumnDefinition Width="130"/></Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions><RowDefinition/><RowDefinition/></Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Polling de entrada (Hz)" VerticalAlignment="Center"/>
+                        <ComboBox Grid.Row="0" Grid.Column="1" x:Name="PollHz" SelectedIndex="2" Width="110" HorizontalAlignment="Left">
+                            <ComboBoxItem>60</ComboBoxItem>
+                            <ComboBoxItem>120</ComboBoxItem>
+                            <ComboBoxItem>250</ComboBoxItem>
+                            <ComboBoxItem>500</ComboBoxItem>
+                        </ComboBox>
+                        <TextBlock Grid.Row="1" Text="Envio de rede (Hz)" VerticalAlignment="Center" Margin="0,8,0,0"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1" x:Name="NetHz" SelectedIndex="2" Width="110" HorizontalAlignment="Left" Margin="0,8,0,0">
+                            <ComboBoxItem>30</ComboBoxItem>
+                            <ComboBoxItem>60</ComboBoxItem>
+                            <ComboBoxItem>125</ComboBoxItem>
+                            <ComboBoxItem>250</ComboBoxItem>
+                        </ComboBox>
+                    </Grid>
+                    <CheckBox x:Name="ShowFps" Content="Mostrar FPS na barra superior" Margin="0,10,0,0" IsChecked="True"/>
+                    <CheckBox x:Name="Verbose" Content="Log detalhado (diagnóstico)" Margin="0,6,0,0"/>
+                    <TextBlock TextWrapping="Wrap" FontSize="11" Margin="0,12,0,0" Foreground="{DynamicResource Muted}"
+                               Text="Mudanças de Hz valem para a próxima inicialização do loop. Botões são enviados IMEDIATAMENTE (não aguardam o tick); este valor controla o fluxo analógico."/>
+                </StackPanel>
+            </TabItem>
+        </TabControl>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="ApplyAll" Content="APLICAR E SALVAR" Width="160" Height="34" FontWeight="Bold" Click="Apply_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
