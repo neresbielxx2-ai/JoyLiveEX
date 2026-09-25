@@ -17,8 +17,10 @@ fun androidHomeDir(): File? {
     System.getenv("ANDROID_SDK_ROOT")?.let { File(it) }?.takeIf { it.isDirectory }?.let { return it }
     val local = rootProject.file("local.properties")
     if (local.exists()) {
-        val props = java.util.Properties().apply { local.inputStream().use { load(it) } }
-        props.getProperty("sdk.dir")?.let { return File(it).takeIf { f -> f.isDirectory } }
+        val props = java.util.Properties()
+        local.inputStream().use { props.load(it) }
+        val dir = props.getProperty("sdk.dir")?.let { File(it) }?.takeIf { f -> f.isDirectory }
+        if (dir != null) return dir
     }
     return null
 }
@@ -35,7 +37,7 @@ val classesJar by tasks.registering(Jar::class) {
 
 val d8Out = layout.buildDirectory.dir("d8-out")
 
-val d8Task by tasks.registering(JavaExec::class) {
+val d8Task by tasks.registering(Exec::class) {
     group = "vjc"
     description = "Dexes the compiled daemon classes with the local Android SDK d8"
     dependsOn(classesJar)
@@ -56,25 +58,22 @@ val d8Task by tasks.registering(JavaExec::class) {
     } else null
 
     enabled = d8Jar != null
-    classpath = files(d8Jar ?: File("."))
-    mainClass.set("com.android.tools.r8.D8")
-
     val outDir = d8Out.get().asFile
     val input = classesJar.flatMap { it.archiveFile }.get().asFile
+    val javaBin = File(System.getProperty("java.home"), "bin/java").absolutePath
+
     doFirst {
         outDir.mkdirs()
-        arguments = buildList {
-            add("--release")
-            add("--min-api")
-            add("26")
-            if (androidJar != null) {
-                add("--lib")
-                add(androidJar.absolutePath)
-            }
-            add("--output")
-            add(outDir.absolutePath)
-            add(input.absolutePath)
-        }
+    }
+    doLast {
+        if (d8Jar == null) return@doLast
+        val cmd = mutableListOf(
+            javaBin, "-cp", d8Jar.absolutePath, "com.android.tools.r8.D8",
+            "--release", "--min-api", "26",
+        )
+        if (androidJar != null) { cmd += "--lib"; cmd += androidJar.absolutePath }
+        cmd += "--output"; cmd += outDir.absolutePath; cmd += input.absolutePath
+        project.exec { commandLine(cmd) }
     }
 }
 

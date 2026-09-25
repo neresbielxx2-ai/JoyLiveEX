@@ -104,7 +104,7 @@ public static class Bin
         return v;
     }
 
-    public static void PutU16BE(byte[] dst, int at, ushort v)
+    public static void PutU16BE(Span<byte> dst, int at, ushort v)
     {
         dst[at] = (byte)(v >> 8);
         dst[at + 1] = (byte)v;
