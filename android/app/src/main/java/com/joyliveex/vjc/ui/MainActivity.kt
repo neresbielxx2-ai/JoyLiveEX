@@ -41,7 +41,7 @@ class MainActivity : Activity() {
         if (Prefs.serviceShouldRun && !ControllerService.running) startService()
     }
 
-    private val refresher = Runnable { refresh() }
+    private val refresher: () -> Unit = { refresh() }
 
     private fun bg(): Int = Color.parseColor("#1B1D22")
 
@@ -184,7 +184,7 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        main.post(refresher)
+        main.post { refresh() }
     }
 
     override fun onDestroy() {

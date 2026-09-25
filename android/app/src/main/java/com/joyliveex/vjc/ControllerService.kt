@@ -76,7 +76,7 @@ class ControllerService : Service() {
             )
         }
         val pi = PendingIntent.getActivity(
-            this, 0, Intent(this, ui.MainActivity::class.java),
+            this, 0, Intent(this, com.joyliveex.vjc.ui.MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
         )
         val n: Notification = NotificationCompat.Builder(this, "vjc")

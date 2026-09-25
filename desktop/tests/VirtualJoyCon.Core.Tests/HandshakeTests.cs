@@ -54,7 +54,7 @@ public class HandshakeTests
     {
         var (a, b, pump) = Pair("8F4K-72LM", "8F4K-72LM");
         ControllerState? got = null;
-        a.StateReceived += (_, s) => got = s;
+        b.StateReceived += (_, s) => got = s;   // server sends STATE_S -> client (b) receives
         bool aOpened = false, bOpened = false;
         a.Opened += _ => aOpened = true;
         b.Opened += _ => bOpened = true;
@@ -72,6 +72,7 @@ public class HandshakeTests
         a.SendState(s);
         pump.Run();
         Assert.NotNull(got);
+        Assert.Equal(0.75f, got!.LeftX, 3);
 
         // client -> server state (what the phone's touch UI sends)
         ControllerState? fromDevice = null;

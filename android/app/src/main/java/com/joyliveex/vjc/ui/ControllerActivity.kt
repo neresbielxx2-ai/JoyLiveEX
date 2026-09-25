@@ -61,7 +61,7 @@ class ControllerActivity : Activity() {
         status = TextView(this).apply {
             setTextColor(Color.parseColor("#9AA0AE"))
             textSize = 11f
-            setBackgroundColor(0x88000000)
+            setBackgroundColor(0x88000000.toInt())
             setPadding(24, 8, 24, 8)
             gravity = Gravity.CENTER_HORIZONTAL
         }
@@ -72,17 +72,17 @@ class ControllerActivity : Activity() {
             setTextColor(Color.parseColor("#E8EAF0"))
             textSize = 13f
             setPadding(32, 24, 32, 24)
-            setBackgroundColor(0x88000000)
+            setBackgroundColor(0x88000000.toInt())
             setOnClickListener { finish() }
         }
         root.addView(exit, FrameLayout.LayoutParams(-2, -2, Gravity.TOP or Gravity.START))
 
         setContentView(root)
         ControllerService.listeners.add(statusRefresher)
-        main.post(refreshLoop)
+        main.post(echoTick)
     }
 
-    private val statusRefresher = Runnable { updateStatus() }
+    private val statusRefresher: () -> Unit = { updateStatus() }
 
     private fun updateStatus() {
         val link = ControllerService.link
@@ -93,20 +93,23 @@ class ControllerActivity : Activity() {
         }
     }
 
-    private fun refreshLoop() {
-        // visual echo: PC-side presses light the buttons on our rails too
-        val pc = LocalInput.pcState
-        for (rail in listOf(left, right)) {
-            for (b in rail.buttons) {
-                b.setEchoPressed((pc.buttons and b.mask) != 0)
+    private val echoTick = object : Runnable {
+        override fun run() {
+            // visual echo: PC-side presses light the buttons on our rails too
+            val pc = LocalInput.pcState
+            for (rail in listOf(left, right)) {
+                for (b in rail.buttons) {
+                    b.setEchoPressed((pc.buttons and b.mask) != 0)
+                }
             }
+            updateStatus()
+            main.postDelayed(this, 100)
         }
-        updateStatus()
-        main.postDelayed(refreshLoop, 100)
     }
 
     override fun onDestroy() {
         ControllerService.listeners.remove(statusRefresher)
+        main.removeCallbacks(echoTick)
         LocalInput.releaseAll() // leaving the screen zeroes sticks/buttons — no stuck input
         super.onDestroy()
     }

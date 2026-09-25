@@ -39,7 +39,7 @@ val classesJar by tasks.registering(Jar::class) {
 
 val d8Out = layout.buildDirectory.dir("d8-out")
 
-val d8Task by tasks.registering(Exec::class) {
+val d8Task by tasks.registering {
     group = "vjc"
     description = "Dexes the compiled daemon classes with the local Android SDK d8"
     dependsOn(classesJar)
@@ -60,15 +60,15 @@ val d8Task by tasks.registering(Exec::class) {
     } else null
 
     enabled = d8Jar != null
-    val outDir = d8Out.get().asFile
-    val input = classesJar.flatMap { it.archiveFile }.get().asFile
-    val javaBin = File(System.getProperty("java.home"), "bin/java").absolutePath
+    inputs.files(classesJar)
+    outputs.dir(d8Out)
 
-    doFirst {
-        outDir.mkdirs()
-    }
     doLast {
         if (d8Jar == null) return@doLast
+        val outDir = d8Out.get().asFile
+        outDir.mkdirs()
+        val input = classesJar.flatMap { it.archiveFile }.get().asFile
+        val javaBin = File(System.getProperty("java.home"), "bin/java").absolutePath
         val cmd = mutableListOf(
             javaBin, "-cp", d8Jar.absolutePath, "com.android.tools.r8.D8",
             "--release", "--min-api", "26",
