@@ -118,7 +118,7 @@ class RailView(ctx: Context, private val side: Side) : ViewGroup(ctx) {
             if (side == Side.LEFT) w * 0.08f else w * 0.44f, if (side == Side.LEFT) w * 0.08f else w * 0.44f,
             if (side == Side.LEFT) w * 0.44f else w * 0.08f, if (side == Side.LEFT) w * 0.44f else w * 0.08f,
             if (side == Side.LEFT) w * 0.08f else w * 0.44f, if (side == Side.LEFT) w * 0.08f else w * 0.44f,
-        ), 0f)
+        ), android.graphics.Path.Direction.CCW)
         canvas.drawPath(path, paint)
         paint.style = Paint.Style.STROKE
         paint.strokeWidth = 2f

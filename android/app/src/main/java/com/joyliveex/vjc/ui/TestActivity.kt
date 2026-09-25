@@ -176,23 +176,9 @@ class TestActivity : Activity() {
         axisRows["AXIS_HAT_X"]?.text = "AXIS_HAT_X: %.2f".format(fmt(MotionEvent.AXIS_HAT_X))
         axisRows["AXIS_HAT_Y"]?.text = "AXIS_HAT_Y: %.2f".format(fmt(MotionEvent.AXIS_HAT_Y))
 
-        // mirror buttonState in motion events too (drivers send both)
-        val bs = event.buttonState
-        for ((name, code) in buttonDefs.take(4)) {
-            val on = when (name) {
-                "A" -> bs and MotionEvent.BUTTON_A != 0
-                "B" -> bs and MotionEvent.BUTTON_B != 0
-                "X" -> bs and MotionEvent.BUTTON_X != 0
-                "Y" -> bs and MotionEvent.BUTTON_Y != 0
-                else -> false
-            }
-            rows[code]?.let { t ->
-                t.text = "$name  ${if (on) "●" else "○"}"
-                t.setTextColor(if (on) Color.parseColor("#4FC3F7") else Color.parseColor("#9AA0AE"))
-            }
-        }
         updateMeta(event.deviceId, event.source)
-        logText.text = "motion: device ${event.deviceId} src=0x${Integer.toHexString(event.source)}"
+        logText.text = "motion: device ${event.deviceId} src=0x${Integer.toHexString(event.source)} " +
+            "buttons=0x${Integer.toHexString(event.buttonState)}"
         return true
     }
 

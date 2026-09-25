@@ -6,6 +6,7 @@ using VirtualJoyCon.InputEngine;
 using VirtualJoyCon.Network;
 using VirtualJoyCon.Network.Link;
 using VirtualJoyCon.Network.Protocol;
+using VjcPairingCode = VirtualJoyCon.Network.Crypto.PairingCode;
 
 namespace VirtualJoyCon.VirtualController;
 
@@ -57,7 +58,7 @@ public sealed class ControllerHub : IDisposable
         _links = new LinkManager(log, () => PairingCode);
         _links.StateReceived += OnDeviceState;
         _links.StatusReceived += OnDeviceStatus;
-        _links.PeerLog += (l, lvl, msg) => log.Log((LogLevel)Math.Clamp(lvl, 0, 3), "ANDROID", msg);
+        _links.PeerLog += (l, lvl, msg) => log.Log((LogLevel)Math.Clamp((int)lvl, 0, 3), "ANDROID", msg);
         _links.LinkOpened += _ => RaiseStatus();
         _links.LinkClosed += OnLinkClosed;
         _leftCurve = cfg.LeftStick.ToCurve();
@@ -69,7 +70,7 @@ public sealed class ControllerHub : IDisposable
 
     public LinkManager Links => _links;
     public GamepadSource Gamepad => _gamepad;
-    public string PairingCode { get; private set; } = Crypto.PairingCode.Generate();
+    public string PairingCode { get; private set; } = VjcPairingCode.Generate();
     public bool Connected => _links.ReadyLinkCount > 0;
     public bool DaemonReady { get; private set; }
 
@@ -87,7 +88,7 @@ public sealed class ControllerHub : IDisposable
 
     public void RegeneratePairingCode()
     {
-        PairingCode = Crypto.PairingCode.Generate();
+        PairingCode = VjcPairingCode.Generate();
         _log.Info("HUB", "nova sessão de pareamento gerada");
         RaiseStatus();
     }

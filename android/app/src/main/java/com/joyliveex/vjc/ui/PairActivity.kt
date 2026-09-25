@@ -196,7 +196,7 @@ class PairActivity : Activity() {
                 if (!i.isUp || i.isLoopback) continue
                 for (addr in i.interfaceAddresses) {
                     val b = addr.broadcast ?: continue
-                    out.add(b.address)
+                    out.add(b.address.let { java.net.InetAddress.getByAddress(it) })
                 }
             }
         } catch (e: Exception) { }
