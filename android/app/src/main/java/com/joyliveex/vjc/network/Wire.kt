@@ -11,7 +11,7 @@ object Wire {
     const val TAG = 16
     const val OVERHEAD = 12
     const val PBKDF2_ITER = 60_000
-    const val STATE_SIZE = 22
+    const val STATE_SIZE = 20            // 4+2+2+2+2+1+1+1+1+4 (matches C# StatePayloadSize)
     const val MAX_PACKET = 1200
     const val RELAY_MAGIC = 0x31434A56  // "VJC1"
     const val RELAY_HDR = 13            // magic4 + op1 + room8

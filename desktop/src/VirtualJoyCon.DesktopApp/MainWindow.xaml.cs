@@ -390,7 +390,7 @@ public partial class MainWindow : Window
         if (action == "ToggleControl")
         {
             if (down)
-                StartStopButton_Click(this, new RoutedEventArgs());
+                StartStop_Click(this, new RoutedEventArgs());
             return true;
         }
         _hub.SetAction(action, down);
