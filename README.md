@@ -1,5 +1,8 @@
 # Virtual Joy-Con — projeto JoyLiveEX
 
+![Build](https://github.com/neresbielxx2-ai/JoyLiveEX/actions/workflows/build.yml/badge.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 **Transforme seu PC em um controle virtual para Android.** Dois Joy-Cons virtuais no
 Windows (mouse **e** touch, teclado, gamepad físico opcional) enviam eventos de gamepad
 para o celular por **USB (ADB)** ou **Internet/LAN** — sem controle físico obrigatório,

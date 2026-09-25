@@ -114,6 +114,16 @@ jobs:
       - name: Zip artifact
         shell: pwsh
         run: Compress-Archive -Path zipstage/* -DestinationPath VirtualJoyCon-Windows.zip -Force
+      - name: Verify zip contents
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $z = [IO.Compression.ZipFile]::OpenRead("$PWD/VirtualJoyCon-Windows.zip")
+          $names = $z.Entries | Where-Object { $_.Length -gt 10kb -or $_.Name -match "(daemon|LEIA|README)" } | ForEach-Object { "{0} ({1:n0} KB)" -f $_.FullName, ($_.Length/1kb) }
+          $z.Dispose()
+          ($names | Select-Object -First 30) -join "`n" | ForEach-Object { "::notice::zip: $_" }
+          if (-not ($names -match "VirtualJoyCon.exe")) { "::error::VirtualJoyCon.exe missing from zip"; exit 1 }
+          if (-not ($names -match "vjc-daemon.jar")) { "::error::vjc-daemon.jar missing from zip"; exit 1 }
       - uses: actions/upload-artifact@v4
         with:
           name: VirtualJoyCon-Windows
